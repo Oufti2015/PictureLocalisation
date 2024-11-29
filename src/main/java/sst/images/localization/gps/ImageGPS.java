@@ -31,6 +31,7 @@ public class ImageGPS {
             System.err.println("No location found on file " + imagefile);
             return null;
         }
+        gpsInfo.setImageFileName(imagefile.getAbsolutePath());
         return gpsInfo;
     }
 

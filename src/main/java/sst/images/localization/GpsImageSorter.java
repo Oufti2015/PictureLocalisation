@@ -3,6 +3,7 @@ package sst.images.localization;
 
 import org.apache.commons.imaging.ImageReadException;
 import sst.images.localization.file.FileCopier;
+import sst.images.localization.save.LocationSaver;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +27,21 @@ public class GpsImageSorter {
         }
 
         try {
+            LocationSaver.me().load(args[1]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+        try {
             new GpsImageSorter(args).run();
         } catch (GpsImageSorterException | IOException | ImageReadException e) {
             e.printStackTrace();
+            System.exit(-1);
         }
+        System.exit(0);
     }
 
     private void run() throws GpsImageSorterException, IOException, ImageReadException {
@@ -37,7 +49,7 @@ public class GpsImageSorter {
         dirProcessing(new File(inputFolderName), new File(outputFolderName));
     }
 
-    private void dirProcessing(File inputFolder, File outputFolder) throws IOException, ImageReadException, GpsImageSorterException {
+    private void dirProcessing(File inputFolder, File outputFolder) throws IOException, GpsImageSorterException {
         for (File file : inputFolder.listFiles()) {
             if (file.isDirectory()) {
                 dirProcessing(file, outputFolder);

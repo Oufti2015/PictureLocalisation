@@ -5,6 +5,7 @@ import sst.images.localization.GpsImageSorterException;
 import sst.images.localization.city.CityFinder;
 import sst.images.localization.gps.ImageGPS;
 import sst.images.localization.model.Localisation;
+import sst.images.localization.save.LocationSaver;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,9 +15,16 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 public class FileCopier {
-    public void fileProcessing(File file, File outputFolder, boolean move) throws IOException, ImageReadException, GpsImageSorterException {
+    public void fileProcessing(File file, File outputFolder, boolean move) throws IOException, GpsImageSorterException {
         if (isImageFile(file)) {
-            Localisation localisation = retrieveLocalisation(file);
+            Localisation localisation = LocationSaver.me().get(file.getName());
+            if (Objects.isNull(localisation)) {
+                localisation = retrieveLocalisation(file);
+                if (!Objects.isNull(localisation)) {
+                    LocationSaver.me().put(file.getName(), localisation);
+                    LocationSaver.me().save();
+                }
+            }
             try {
                 File destination;
                 if (!Objects.isNull(localisation) && !Objects.isNull(localisation.getCountryCode())) {
@@ -56,24 +64,38 @@ public class FileCopier {
         File countryFolder = new File(outputFolder + File.separator + localisation.getCountryCode().toUpperCase());
         createFolder(countryFolder);
 
-        File regionFolder = new File(countryFolder + File.separator + toCamelCase(Objects.requireNonNullElse(localisation.getRegion(), localisation.getCity())));
-        createFolder(regionFolder);
+        File regionFolder;
+        if (!Objects.isNull(localisation.getRegion())) {
+            regionFolder = new File(countryFolder + File.separator + toCamelCase(localisation.getRegion()));
+            createFolder(regionFolder);
+        } else {
+            regionFolder = countryFolder;
+        }
 
-        File cityFolder = new File(regionFolder + File.separator + toCamelCase(localisation.getCity()));
-        createFolder(cityFolder);
+        File cityFolder;
+        if (!Objects.isNull(localisation.getCity())) {
+            cityFolder = new File(regionFolder + File.separator + toCamelCase(localisation.getCity()));
+            createFolder(cityFolder);
+        } else {
+            cityFolder = regionFolder;
+        }
 
         return new File(cityFolder + File.separator + file.getName());
     }
 
-    private Localisation retrieveLocalisation(File file) throws IOException, ImageReadException {
+    private Localisation retrieveLocalisation(File file) {
         ImageGPS gps = new ImageGPS();
         CityFinder cityFinder = new CityFinder();
-
-        Localisation result = gps.retrieveLocalisation(file);
-        if (result != null) {
-            result = cityFinder.findCity(result);
+        Localisation result;
+        try {
+            result = gps.retrieveLocalisation(file);
+            if (result != null) {
+                result = cityFinder.findCity(result);
+            }
+        } catch (IOException | ImageReadException e) {
+            System.err.println("Invalid JPEG image " + file);
+            result = null;
         }
-
         return result;
     }
 
