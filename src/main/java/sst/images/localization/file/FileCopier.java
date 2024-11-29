@@ -17,41 +17,49 @@ public class FileCopier {
     public void fileProcessing(File file, File outputFolder, boolean move) throws IOException, ImageReadException, GpsImageSorterException {
         if (isImageFile(file)) {
             Localisation localisation = retrieveLocalisation(file);
-            File destination;
-            if (localisation != null) {
-                destination = prepareDestinationFolders(file, outputFolder, localisation);
-            } else {
-                File unknownFolder = new File(outputFolder + File.separator + "unknown");
-                createFolder(unknownFolder);
-                destination = new File(unknownFolder + File.separator + file.getName());
-            }
-
-            if (!destination.exists()) {
-                Path sourcePath = file.toPath();
-                Path destinationPath = destination.toPath();
-                System.out.println("Copying " + sourcePath + " into " + destinationPath + "...");
-                // Copier le fichier (remplace s'il existe déjà)
-
-                if (move) {
-                    Files.move(sourcePath, destinationPath, StandardCopyOption.ATOMIC_MOVE);
+            try {
+                File destination;
+                if (!Objects.isNull(localisation) && !Objects.isNull(localisation.getCountryCode())) {
+                    destination = prepareDestinationFolders(file, outputFolder, localisation);
                 } else {
-                    Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    File unknownFolder = new File(outputFolder + File.separator + "unknown");
+                    createFolder(unknownFolder);
+                    destination = new File(unknownFolder + File.separator + file.getName());
+                }
+
+                if (!destination.exists()) {
+                    Path sourcePath = file.toPath();
+                    Path destinationPath = destination.toPath();
+                    System.out.println("Copying " + sourcePath + " into " + destinationPath + "...");
+                    // Copier le fichier (remplace s'il existe déjà)
+
+                    if (move) {
+                        Files.move(sourcePath, destinationPath, StandardCopyOption.ATOMIC_MOVE);
+                    } else {
+                        Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            } catch (Exception e) {
+                if (localisation != null) {
+                    System.err.println("url         : " + localisation.getUrl());
+                    System.err.println("json result : " + localisation.getJsonResult());
+                    e.printStackTrace();
+                    throw e;
                 }
             }
-
         } else {
             System.out.println("File " + file + " is not an image.");
         }
     }
 
     private static File prepareDestinationFolders(File file, File outputFolder, Localisation localisation) throws GpsImageSorterException {
-        File countryFolder = new File(outputFolder + File.separator + localisation.countryCode().toUpperCase());
+        File countryFolder = new File(outputFolder + File.separator + localisation.getCountryCode().toUpperCase());
         createFolder(countryFolder);
 
-        File regionFolder = new File(countryFolder + File.separator + toCamelCase(Objects.requireNonNullElse(localisation.region(), localisation.city())));
+        File regionFolder = new File(countryFolder + File.separator + toCamelCase(Objects.requireNonNullElse(localisation.getRegion(), localisation.getCity())));
         createFolder(regionFolder);
 
-        File cityFolder = new File(regionFolder + File.separator + toCamelCase(localisation.city()));
+        File cityFolder = new File(regionFolder + File.separator + toCamelCase(localisation.getCity()));
         createFolder(cityFolder);
 
         return new File(cityFolder + File.separator + file.getName());
