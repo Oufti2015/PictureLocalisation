@@ -127,7 +127,7 @@ public class FileCopier {
         }
 
         // Diviser la chaîne en mots en utilisant des délimiteurs
-        String[] words = input.split("[\\s_'_-]+"); // Espace, underscore ou tiret
+        String[] words = input.split("[\\s_'_/-]+"); // Espace, underscore ou tiret
 
         // Construire la chaîne camelCase
         StringBuilder camelCaseString = new StringBuilder();
