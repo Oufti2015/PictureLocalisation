@@ -1,0 +1,29 @@
+{
+  "place_id": 80533541,
+  "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+  "osm_type": "way",
+  "osm_id": 184583537,
+  "lat": "45.86859725167531",
+  "lon": "7.165241729240307",
+  "class": "highway",
+  "type": "secondary",
+  "place_rank": 26,
+  "importance": 0.05338124132143126,
+  "addresstype": "road",
+  "name": "Strada statale 27 del Gran San Bernardo",
+  "display_name": "Strada statale 27 del Gran San Bernardo, Saint-Rhémy-en-Bosses, Valle d'Aosta / Vallée d'Aoste, Italia",
+  "address": {
+    "road": "Strada statale 27 del Gran San Bernardo",
+    "village": "Saint-Rhémy-en-Bosses",
+    "state": "Valle d'Aosta / Vallée d'Aoste",
+    "ISO3166-2-lvl4": "IT-23",
+    "country": "Italia",
+    "country_code": "it"
+  },
+  "boundingbox": [
+    "45.8685351",
+    "45.8690086",
+    "7.1652333",
+    "7.1656222"
+  ]
+}

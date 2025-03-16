@@ -71,12 +71,13 @@ public class CityFinder {
         JsonObject jsonObject = JsonParser.parseString(localisation.getJsonResult()).getAsJsonObject();
         JsonObject address = jsonObject.getAsJsonObject(ADDRESS_JSON);
 
-        localisation.setCity(parseJson(address, Arrays.asList("city", "village", "city_district", "town")));
-        localisation.setCityShortCode(parseJson(address, Arrays.asList("ISO3166-2-lvl4", "ISO3166-2-lvl6")));
-        localisation.setRegion(parseJson(address, List.of("state", "state_district")));
-        localisation.setCountry(parseJson(address, List.of("country")));
-        localisation.setCountryCode(parseJson(address, List.of("country_code")));
-
+        if (address != null) {
+            localisation.setCity(parseJson(address, Arrays.asList("city", "village", "city_district", "town")));
+            localisation.setCityShortCode(parseJson(address, Arrays.asList("ISO3166-2-lvl4", "ISO3166-2-lvl6")));
+            localisation.setRegion(parseJson(address, List.of("state", "state_district")));
+            localisation.setCountry(parseJson(address, List.of("country")));
+            localisation.setCountryCode(parseJson(address, List.of("country_code")));
+        }
         return localisation;
     }
 

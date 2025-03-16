@@ -1,9 +1,12 @@
 package sst.images.localization.file;
 
-import org.apache.commons.imaging.ImageReadException;
 import sst.images.localization.GpsImageSorterException;
 import sst.images.localization.city.CityFinder;
+import sst.images.localization.exceptions.GpsException;
+import sst.images.localization.gps.Gps;
 import sst.images.localization.gps.ImageGPS;
+import sst.images.localization.gps.VideoGPSByDrew;
+import sst.images.localization.gps.VideoGpsByFFprobe;
 import sst.images.localization.model.Localisation;
 import sst.images.localization.save.LocationSaver;
 
@@ -12,11 +15,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class FileCopier {
     public void fileProcessing(File file, File outputFolder, boolean move) throws IOException, GpsImageSorterException {
-        if (isImageFile(file)) {
+        if (isMediaFile(file)) {
             Localisation localisation = LocationSaver.me().get(file.getName());
             if (Objects.isNull(localisation)) {
                 localisation = retrieveLocalisation(file);
@@ -83,8 +89,27 @@ public class FileCopier {
         return new File(cityFolder + File.separator + file.getName());
     }
 
+    private static final Gps imageGps = new ImageGPS();
+    private static final Gps videoGps1 = new VideoGPSByDrew();
+    private static final Gps videoGps2 = new VideoGpsByFFprobe();
+
+    private static final Map<String, Gps> gpsByFileType = new HashMap<>();
+
+    static {
+        gpsByFileType.put(".jpg", imageGps);
+        gpsByFileType.put(".jpeg", imageGps);
+        gpsByFileType.put(".png", imageGps);
+        gpsByFileType.put(".gif", imageGps);
+        gpsByFileType.put(".bmp", imageGps);
+        gpsByFileType.put(".webp", imageGps);
+        gpsByFileType.put(".tiff", imageGps);
+        gpsByFileType.put(".mp4", videoGps2);
+        gpsByFileType.put(".mov", videoGps2);
+        gpsByFileType.put(".avi", videoGps2);
+    }
+
     private Localisation retrieveLocalisation(File file) {
-        ImageGPS gps = new ImageGPS();
+        Gps gps = getGps(file);
         CityFinder cityFinder = new CityFinder();
         Localisation result;
         try {
@@ -92,11 +117,22 @@ public class FileCopier {
             if (result != null) {
                 result = cityFinder.findCity(result);
             }
-        } catch (IOException | ImageReadException e) {
+        } catch (GpsException | IOException e) {
             System.err.println("Invalid JPEG image " + file);
             result = null;
         }
         return result;
+    }
+
+    private static Gps getGps(File file) {
+        Set<String> extensions = gpsByFileType.keySet();
+        String fileName = file.getName().toLowerCase();
+        for (String extension : extensions) {
+            if (fileName.endsWith(extension)) {
+                return gpsByFileType.get(extension);
+            }
+        }
+        return new ImageGPS();
     }
 
     private static void createFolder(File folder) throws GpsImageSorterException {
@@ -107,13 +143,13 @@ public class FileCopier {
         }
     }
 
-    public static boolean isImageFile(File file) {
+    public static boolean isMediaFile(File file) {
         if (!file.isFile()) {
             return false;
         }
-        String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff"};
+        Set<String> extensions = gpsByFileType.keySet();
         String fileName = file.getName().toLowerCase();
-        for (String extension : imageExtensions) {
+        for (String extension : extensions) {
             if (fileName.endsWith(extension)) {
                 return true;
             }
