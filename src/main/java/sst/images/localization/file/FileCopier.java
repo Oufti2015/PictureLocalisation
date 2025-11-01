@@ -9,6 +9,7 @@ import sst.images.localization.gps.VideoGPSByDrew;
 import sst.images.localization.gps.VideoGpsByFFprobe;
 import sst.images.localization.model.Localisation;
 import sst.images.localization.save.LocationSaver;
+import sst.images.localization.translate.Dictionnary;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.Set;
 public class FileCopier {
     public void fileProcessing(File file, File outputFolder, boolean move) throws IOException, GpsImageSorterException {
         if (isMediaFile(file)) {
+            System.out.println(file);
             Localisation localisation = LocationSaver.me().get(file.getName());
             if (Objects.isNull(localisation)) {
                 localisation = retrieveLocalisation(file);
@@ -71,16 +73,20 @@ public class FileCopier {
         createFolder(countryFolder);
 
         File regionFolder;
-        if (!Objects.isNull(localisation.getRegion())) {
-            regionFolder = new File(countryFolder + File.separator + toCamelCase(localisation.getRegion()));
+        String region = localisation.getRegion();
+        if (!Objects.isNull(region)) {
+            region = Dictionnary.me().translate(region);
+            regionFolder = new File(countryFolder + File.separator + toCamelCase(region));
             createFolder(regionFolder);
         } else {
             regionFolder = countryFolder;
         }
 
         File cityFolder;
-        if (!Objects.isNull(localisation.getCity())) {
-            cityFolder = new File(regionFolder + File.separator + toCamelCase(localisation.getCity()));
+        String city = localisation.getCity();
+        if (!Objects.isNull(city)) {
+            city = Dictionnary.me().translate(city);
+            cityFolder = new File(regionFolder + File.separator + toCamelCase(city));
             createFolder(cityFolder);
         } else {
             cityFolder = regionFolder;
