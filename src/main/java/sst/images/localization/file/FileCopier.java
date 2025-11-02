@@ -9,13 +9,18 @@ import sst.images.localization.gps.VideoGPSByDrew;
 import sst.images.localization.gps.VideoGpsByFFprobe;
 import sst.images.localization.model.Localisation;
 import sst.images.localization.save.LocationSaver;
+import sst.images.localization.save.TimestampSaver;
 import sst.images.localization.translate.Dictionnary;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +37,17 @@ public class FileCopier {
                     LocationSaver.me().put(file.getName(), localisation);
                     LocationSaver.me().save();
                 }
+            }
+            Path path = Paths.get(file.getAbsolutePath());
+            BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
+            LocalDateTime creationTimestamp = LocalDateTime.ofInstant(attrs.lastModifiedTime().toInstant(), ZoneId.systemDefault());
+            if (!Objects.isNull(localisation) && Objects.isNull(TimestampSaver.me().get(creationTimestamp))) {
+                TimestampSaver.me().put(creationTimestamp, localisation);
+                TimestampSaver.me().save();
+            }
+
+            if (Objects.isNull(localisation) || Objects.isNull(localisation.getCountryCode())) {
+                localisation = TimestampSaver.me().closest(creationTimestamp);
             }
             try {
                 File destination;
@@ -114,7 +130,7 @@ public class FileCopier {
         gpsByFileType.put(".avi", videoGps2);
     }
 
-    private Localisation retrieveLocalisation(File file) {
+    public Localisation retrieveLocalisation(File file) {
         Gps gps = getGps(file);
         CityFinder cityFinder = new CityFinder();
         Localisation result;

@@ -6,7 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>PictureLocalisation</artifactId>
-    <version>2025.001</version>
+    <version>2025.002</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -15,6 +15,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>sst.date.utils</groupId>
+            <artifactId>DateUtils</artifactId>
+            <version>2025.001</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-imaging -->
         <dependency>
             <groupId>org.apache.commons</groupId>

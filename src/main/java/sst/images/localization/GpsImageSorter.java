@@ -4,9 +4,11 @@ package sst.images.localization;
 import org.apache.commons.imaging.ImageReadException;
 import sst.images.localization.file.FileCopier;
 import sst.images.localization.save.LocationSaver;
+import sst.images.localization.save.TimestampSaver;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class GpsImageSorter {
     private final String inputFolderName;
@@ -28,6 +30,7 @@ public class GpsImageSorter {
 
         try {
             LocationSaver.me().load(args[1]);
+            TimestampSaver.me().load(args[1]);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -50,7 +53,7 @@ public class GpsImageSorter {
     }
 
     private void dirProcessing(File inputFolder, File outputFolder) throws IOException, GpsImageSorterException {
-        for (File file : inputFolder.listFiles()) {
+        for (File file : Objects.requireNonNull(inputFolder.listFiles())) {
             if (file.isDirectory()) {
                 dirProcessing(file, outputFolder);
             } else {

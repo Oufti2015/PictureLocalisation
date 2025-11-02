@@ -1,97 +1,46 @@
 package sst.images.localization.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 
 public class Localisation implements Serializable {
+    @Getter
+    @Setter
     private Double latitude;
+    @Getter
+    @Setter
     private Double longitude;
+    @Getter
+    @Setter
     private String city;
+    @Getter
+    @Setter
     private String cityShortCode;
+    @Getter
+    @Setter
     private String region;
+    @Getter
+    @Setter
     private String country;
+    @Getter
+    @Setter
     private String countryCode;
 
+    @Getter
+    @Setter
     private String imageFileName;
+    @Getter
+    @Setter
     private String url;
+    @Getter
+    @Setter
     private String jsonResult;
 
-    public Double getLatitude() {
-        return latitude;
-    }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getCityShortCode() {
-        return cityShortCode;
-    }
-
-    public void setCityShortCode(String cityShortCode) {
-        this.cityShortCode = cityShortCode;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
-    public String getImageFileName() {
-        return imageFileName;
-    }
-
-    public void setImageFileName(String imageFileName) {
-        this.imageFileName = imageFileName;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getJsonResult() {
-        return jsonResult;
-    }
-
-    public void setJsonResult(String jsonResult) {
-        this.jsonResult = jsonResult;
+    @Override
+    public String toString() {
+        return countryCode + "-" + region + "-" + city + " (" + latitude + "," + longitude + ")";
     }
 }
