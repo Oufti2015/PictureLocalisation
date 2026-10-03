@@ -2,6 +2,7 @@ package sst.images.localization.file;
 
 import sst.images.localization.GpsImageSorterException;
 import sst.images.localization.city.CityFinder;
+import sst.images.localization.city.LocationIQ;
 import sst.images.localization.exceptions.GpsException;
 import sst.images.localization.gps.Gps;
 import sst.images.localization.gps.ImageGPS;
@@ -70,6 +71,8 @@ public class FileCopier {
                     } else {
                         Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
                     }
+                } else {
+                    System.out.println("File " + destination + " already exists. Skipping copy.");
                 }
             } catch (Exception e) {
                 if (localisation != null) {
@@ -132,7 +135,7 @@ public class FileCopier {
 
     public Localisation retrieveLocalisation(File file) {
         Gps gps = getGps(file);
-        CityFinder cityFinder = new CityFinder();
+        CityFinder cityFinder = new LocationIQ();
         Localisation result;
         try {
             result = gps.retrieveLocalisation(file);
@@ -141,6 +144,7 @@ public class FileCopier {
             }
         } catch (GpsException | IOException e) {
             System.err.println("Invalid JPEG image " + file);
+            e.printStackTrace();
             result = null;
         }
         return result;

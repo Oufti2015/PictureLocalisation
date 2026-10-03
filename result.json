@@ -27,3 +27,35 @@
     "7.1656222"
   ]
 }
+
+{
+  "place_id": 34290979,
+  "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+  "osm_type": "way",
+  "osm_id": 900545336,
+  "lat": "-33.9691011",
+  "lon": "18.5944669",
+  "class": "highway",
+  "type": "service",
+  "place_rank": 27,
+  "importance": 0.04004422446021209,
+  "addresstype": "road",
+  "name": "Car Rentals Return",
+  "display_name": "Car Rentals Return, Cape Town Ward 24, Stad Kaapstad, Western Cape, 7579, South Africa",
+  "address": {
+    "road": "Car Rentals Return",
+    "suburb": "Cape Town Ward 24",
+    "county": "Stad Kaapstad",
+    "state": "Western Cape",
+    "ISO3166-2-lvl4": "ZA-WC",
+    "postcode": "7579",
+    "country": "South Africa",
+    "country_code": "za"
+  },
+  "boundingbox": [
+    "-33.9693108",
+    "-33.9686805",
+    "18.5935422",
+    "18.5951337"
+  ]
+}
